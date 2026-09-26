@@ -1,11 +1,18 @@
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class OrderService {
+
+    ExecutorService executor = Executors.newFixedThreadPool(2);
 
     public void placeOrder() {
         System.out.println("Order place");
 
-        String paymentStatus = processPayment();
-
-        System.out.println("Payment Status: " + paymentStatus);
+        Thread t1 = new Thread(() -> {
+            String paymentStatus = processPayment();
+            System.out.println("Payment Status: " + paymentStatus);
+        });
+        t1.start();
 
         saveOrder();
 
