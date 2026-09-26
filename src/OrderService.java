@@ -1,20 +1,18 @@
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class OrderService {
 
     ExecutorService executor = Executors.newFixedThreadPool(2);
 
-    public void placeOrder() {
+    public void placeOrder() throws ExecutionException, InterruptedException {
         System.out.println("Order place");
 
-        Thread t1 = new Thread(() -> {
-            String paymentStatus = processPayment();
-            System.out.println("Payment Status: " + paymentStatus);
-        });
-        t1.start();
-
-        saveOrder();
+        Future<String> payment = executor.submit(() -> processPayment());
+        String status = payment.get();
+        saveOrder(status);
 
         System.out.println("Order complete");
     }
@@ -25,8 +23,8 @@ public class OrderService {
         return "Success";
     }
 
-    public void saveOrder() {
-        System.out.println("Order Saved");
+    public void saveOrder(String status) {
+        System.out.println("Order Saved with status: " + status);
     }
 
     public void sleep(long millis) {
